@@ -1,0 +1,20 @@
+version: 0.2
+
+env:
+  variables:
+    ENV: "sr-de-test"
+
+phases:
+  install:
+    commands:
+      - yum install -y yum-utils
+      - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform
+      #- pip install checkov
+  build:
+    commands:
+      #- checkov --config-file checkov.yaml
+      - terraform init -backend-config="bucket=${TF_STATE_BUCKET}" -backend-config="key=${TF_VAR_candidate}.tfstate"
+      - terraform plan
+      - terraform apply -auto-approve
+      - terraform output
